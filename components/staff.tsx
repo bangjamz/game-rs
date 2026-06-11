@@ -12,6 +12,7 @@ import { MinusCircle, PlusCircle, Users } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
+import HelpButton from "@/components/help-button"
 
 interface StaffProps {
   gameState: GameState
@@ -358,12 +359,15 @@ export default function Staff({ gameState, setGameState }: StaffProps) {
   }
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-4 p-1">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="overview">Ringkasan Staf</TabsTrigger>
-          <TabsTrigger value="assign">Penugasan Staf</TabsTrigger>
-        </TabsList>
+        <div className="flex items-center justify-between mb-3">
+          <TabsList className="grid grid-cols-2">
+            <TabsTrigger value="overview">Rekrut & Kelola</TabsTrigger>
+            <TabsTrigger value="assign">Tugaskan ke Departemen</TabsTrigger>
+          </TabsList>
+          <HelpButton context="staff" />
+        </div>
 
         <TabsContent value="overview" className="space-y-6">
           <Card>
@@ -435,13 +439,13 @@ export default function Staff({ gameState, setGameState }: StaffProps) {
                   <div className="flex items-center justify-between">
                     <span className="text-blue-700">Pertumbuhan Pasien:</span>
                     <span className="font-medium text-blue-900">
-                      +{((gameState.staffMultipliers?.patientGrowth || 1) - 1) * 100}%
+                      +{(((gameState.staffMultipliers?.patientGrowth || 1) - 1) * 100).toFixed(1)}%
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-blue-700">Pendapatan per Pasien:</span>
                     <span className="font-medium text-blue-900">
-                      +{((gameState.staffMultipliers?.revenue || 1) - 1) * 100}%
+                      +{(((gameState.staffMultipliers?.revenue || 1) - 1) * 100).toFixed(1)}%
                     </span>
                   </div>
                 </div>
@@ -475,11 +479,11 @@ export default function Staff({ gameState, setGameState }: StaffProps) {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm">Pengaruh Pasien:</span>
-                      <span className="font-medium">+{(staffType.patientMultiplier - 1) * 100}%</span>
+                      <span className="font-medium">+{((staffType.patientMultiplier - 1) * 100).toFixed(0)}%</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm">Pengaruh Pendapatan:</span>
-                      <span className="font-medium">+{(staffType.revenueMultiplier - 1) * 100}%</span>
+                      <span className="font-medium">+{((staffType.revenueMultiplier - 1) * 100).toFixed(0)}%</span>
                     </div>
                   </div>
                 </CardContent>

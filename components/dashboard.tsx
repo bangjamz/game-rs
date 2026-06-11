@@ -7,6 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { formatCurrency } from "@/lib/utils"
 import type { GameState } from "@/lib/types"
 import { AlertCircle, HeartPulse, TrendingDown, TrendingUp, Users } from "lucide-react"
+import HelpButton from "@/components/help-button"
 import { Progress } from "@/components/ui/progress"
 
 interface DashboardProps {
@@ -43,8 +44,8 @@ export default function Dashboard({ gameState, setGameState }: DashboardProps) {
   const hasFinancialWarning = gameState.financialHistory.slice(-3).every((month) => month.profit < 0)
 
   return (
-    <div className="space-y-6 p-4">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="space-y-4 p-1">
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">Pendapatan Bulan Ini</CardTitle>
@@ -59,7 +60,7 @@ export default function Dashboard({ gameState, setGameState }: DashboardProps) {
                   ) : (
                     <TrendingDown className="mr-1 h-4 w-4" />
                   )}
-                  <span className="text-sm">{Math.abs(revenueTrend).toFixed(1)}%</span>
+                  <span className="text-xs">{Math.abs(revenueTrend).toFixed(1)}%</span>
                 </div>
               )}
             </div>
@@ -82,7 +83,7 @@ export default function Dashboard({ gameState, setGameState }: DashboardProps) {
                   ) : (
                     <TrendingDown className="mr-1 h-4 w-4" />
                   )}
-                  <span className="text-sm">{Math.abs(profitTrend).toFixed(1)}%</span>
+                  <span className="text-xs">{Math.abs(profitTrend).toFixed(1)}%</span>
                 </div>
               )}
             </div>
@@ -103,7 +104,7 @@ export default function Dashboard({ gameState, setGameState }: DashboardProps) {
                   ) : (
                     <TrendingDown className="mr-1 h-4 w-4" />
                   )}
-                  <span className="text-sm">{Math.abs(patientsTrend).toFixed(1)}%</span>
+                  <span className="text-xs">{Math.abs(patientsTrend).toFixed(1)}%</span>
                 </div>
               )}
             </div>
@@ -148,12 +149,12 @@ export default function Dashboard({ gameState, setGameState }: DashboardProps) {
               />
               <div className="text-xs text-gray-500">
                 {gameState.patientSatisfaction >= 80
-                  ? "Sangat Baik"
+                  ? "⭐ Sangat Baik — pasien tumbuh cepat"
                   : gameState.patientSatisfaction >= 60
-                    ? "Baik"
+                    ? "👍 Baik — pertumbuhan stabil"
                     : gameState.patientSatisfaction >= 40
-                      ? "Cukup"
-                      : "Kurang"}
+                      ? "⚠️ Cukup — pertumbuhan melambat"
+                      : "🔴 Rendah — pasien menurun!"}
               </div>
             </div>
           </CardContent>
@@ -379,8 +380,11 @@ export default function Dashboard({ gameState, setGameState }: DashboardProps) {
       {/* Satisfaction Factors */}
       <Card>
         <CardHeader>
-          <CardTitle>Faktor Kepuasan Pasien</CardTitle>
-          <CardDescription>Faktor-faktor yang mempengaruhi kepuasan pasien</CardDescription>
+          <CardTitle className="flex items-center justify-between">
+            <span>Faktor Kepuasan Pasien</span>
+            <HelpButton context="dashboard" />
+          </CardTitle>
+          <CardDescription>Kepuasan mempengaruhi pertumbuhan pasien bulan berikutnya (exponential multiplier)</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -390,7 +394,7 @@ export default function Dashboard({ gameState, setGameState }: DashboardProps) {
                 <span className="font-medium">{calculateStaffRatio(gameState)}%</span>
               </div>
               <Progress value={calculateStaffRatio(gameState)} className="bg-blue-100" />
-              <p className="text-xs text-gray-500">Rasio jumlah staf terhadap kebutuhan staf di semua departemen</p>
+              <p className="text-xs text-gray-500">Bobot 50% — tambah staf ke departemen untuk naikan skor ini</p>
             </div>
 
             <div className="space-y-2">
@@ -399,7 +403,7 @@ export default function Dashboard({ gameState, setGameState }: DashboardProps) {
                 <span className="font-medium">{calculateFacilityQuality(gameState)}%</span>
               </div>
               <Progress value={calculateFacilityQuality(gameState)} className="bg-green-100" />
-              <p className="text-xs text-gray-500">Berdasarkan level departemen dan jumlah departemen spesialis</p>
+              <p className="text-xs text-gray-500">Bobot 30% — upgrade level & buka departemen spesialis</p>
             </div>
 
             <div className="space-y-2">
@@ -408,7 +412,12 @@ export default function Dashboard({ gameState, setGameState }: DashboardProps) {
                 <span className="font-medium">{calculateWaitingTime(gameState)}%</span>
               </div>
               <Progress value={calculateWaitingTime(gameState)} className="bg-yellow-100" />
-              <p className="text-xs text-gray-500">Berdasarkan rasio pasien terhadap kapasitas</p>
+              <p className="text-xs text-gray-500">Bobot 20% — jaga ocupansi &lt; 80% kapasitas total</p>
+            </div>
+
+            <div className="mt-2 rounded-lg bg-emerald-50 border border-emerald-200 p-3 text-xs text-emerald-800">
+              <strong>Dampak kepuasan:</strong> kepuasan 80% → pasien tumbuh {(Math.pow(1.02, 80/10) * 100 - 100).toFixed(1)}% lebih cepat.
+              Kepuasan 50% → hanya {(Math.pow(1.02, 50/10) * 100 - 100).toFixed(1)}% bonus. Jaga selalu di atas 70%.
             </div>
           </div>
         </CardContent>

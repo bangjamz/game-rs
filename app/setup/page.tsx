@@ -7,9 +7,56 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
+
+const DIFFICULTY_OPTIONS = [
+  {
+    value: "easy",
+    label: "Mudah",
+    emoji: "😊",
+    color: "border-green-400 bg-green-50",
+    activeColor: "border-green-600 bg-green-100 ring-2 ring-green-400",
+    badge: "bg-green-100 text-green-700",
+    perks: [
+      "Modal awal Rp 10 M + bunga pinjaman rendah (5%/th)",
+      "Biaya operasional lebih ringan (×0.8)",
+      "Event bulanan berdampak kecil",
+      "Pasien tumbuh lebih cepat (+20%)",
+    ],
+    summary: "Cocok untuk belajar konsep dasar tanpa tekanan.",
+  },
+  {
+    value: "medium",
+    label: "Sedang",
+    emoji: "😐",
+    color: "border-yellow-400 bg-yellow-50",
+    activeColor: "border-yellow-600 bg-yellow-100 ring-2 ring-yellow-400",
+    badge: "bg-yellow-100 text-yellow-700",
+    perks: [
+      "Modal awal Rp 10 M, bunga 8%/th",
+      "Biaya operasional standar",
+      "Event bulanan berdampak normal",
+      "Pertumbuhan pasien realistis",
+    ],
+    summary: "Seimbang antara tantangan dan peluang belajar.",
+  },
+  {
+    value: "hard",
+    label: "Sulit",
+    emoji: "😤",
+    color: "border-red-400 bg-red-50",
+    activeColor: "border-red-600 bg-red-100 ring-2 ring-red-400",
+    badge: "bg-red-100 text-red-700",
+    perks: [
+      "Modal awal Rp 10 M, bunga tinggi (12%/th)",
+      "Biaya operasional lebih berat (×1.3)",
+      "Event bulanan berdampak besar",
+      "Pasien lebih fluktuatif & lambat tumbuh",
+    ],
+    summary: "Untuk yang ingin tantangan nyata manajemen RS.",
+  },
+]
 
 export default function SetupPage() {
   const router = useRouter()
@@ -17,6 +64,7 @@ export default function SetupPage() {
   const [managerName, setManagerName] = useState("")
   const [hospitalName, setHospitalName] = useState("")
   const [difficulty, setDifficulty] = useState("medium")
+  const [showTutorial, setShowTutorial] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,45 +78,29 @@ export default function SetupPage() {
       return
     }
 
-    // Department characteristics
+    const costMultiplier = difficulty === "easy" ? 0.8 : difficulty === "hard" ? 1.3 : 1.0
+
     const departmentCharacteristics = {
-      emergency: {
-        patientGrowth: 1.5, // Moderate patient growth
-        revenue: 3_000_000, // High revenue per patient
-        stability: 0.8, // Moderate stability
-        specialty: 1.0, // No specialty bonus
-      },
-      generalClinic: {
-        patientGrowth: 2.0, // High patient growth
-        revenue: 800_000, // Low revenue per patient
-        stability: 0.9, // High stability
-        specialty: 1.0, // No specialty bonus
-      },
-      inpatient: {
-        patientGrowth: 1.2, // Low patient growth
-        revenue: 7_000_000, // Very high revenue per patient
-        stability: 0.7, // Low stability
-        specialty: 1.0, // No specialty bonus
-      },
+      emergency: { patientGrowth: 1.5, revenue: 3_000_000, stability: 0.8, specialty: 1.0 },
+      generalClinic: { patientGrowth: 2.0, revenue: 800_000, stability: 0.9, specialty: 1.0 },
+      inpatient: { patientGrowth: 1.2, revenue: 7_000_000, stability: 0.7, specialty: 1.0 },
     }
 
-    // Save game setup to localStorage
+    const annualRate = difficulty === "easy" ? 0.05 : difficulty === "medium" ? 0.08 : 0.12
+
     const gameSetup = {
       managerName,
       hospitalName,
       difficulty,
+      costMultiplier,
       startDate: new Date().toISOString(),
-      cash: 10_000_000_000, // 10 billion rupiah
+      cash: 10_000_000_000,
       loans: [
         {
           amount: 10_000_000_000,
-          interestRate: difficulty === "easy" ? 0.05 : difficulty === "medium" ? 0.08 : 0.12,
+          interestRate: annualRate,
           termMonths: 36,
-          monthlyPayment: calculateLoanPayment(
-            10_000_000_000,
-            difficulty === "easy" ? 0.05 : difficulty === "medium" ? 0.08 : 0.12,
-            36,
-          ),
+          monthlyPayment: calculateLoanPayment(10_000_000_000, annualRate, 36),
           remainingMonths: 36,
         },
       ],
@@ -84,65 +116,41 @@ export default function SetupPage() {
         cardiology: {
           name: "Kardiologi",
           unlockCost: 5_000_000_000,
-          level: 0,
-          capacity: 0,
-          staff: 0,
-          requiredStaff: 15,
+          level: 0, capacity: 0, staff: 0, requiredStaff: 15,
           description: "Departemen spesialis jantung dan pembuluh darah",
         },
         pediatrics: {
           name: "Pediatri",
           unlockCost: 3_000_000_000,
-          level: 0,
-          capacity: 0,
-          staff: 0,
-          requiredStaff: 12,
+          level: 0, capacity: 0, staff: 0, requiredStaff: 12,
           description: "Departemen spesialis anak",
         },
         surgery: {
           name: "Bedah",
           unlockCost: 7_000_000_000,
-          level: 0,
-          capacity: 0,
-          staff: 0,
-          requiredStaff: 20,
+          level: 0, capacity: 0, staff: 0, requiredStaff: 20,
           description: "Departemen bedah dan operasi",
         },
         laboratory: {
           name: "Laboratorium",
           unlockCost: 2_500_000_000,
-          level: 0,
-          capacity: 0,
-          staff: 0,
-          requiredStaff: 8,
+          level: 0, capacity: 0, staff: 0, requiredStaff: 8,
           description: "Laboratorium untuk pemeriksaan medis",
         },
       },
-      staff: {
-        doctors: 10,
-        nurses: 15,
-        administration: 5,
-        support: 5,
-      },
-      staffMultipliers: {
-        patientGrowth: 1.2, // Initial staff multiplier for patient growth
-        revenue: 1.15, // Initial staff multiplier for revenue
-      },
+      staff: { doctors: 10, nurses: 15, administration: 5, support: 5 },
+      staffMultipliers: { patientGrowth: 1.2, revenue: 1.15 },
       departmentMultipliers: departmentCharacteristics,
-      patientSatisfaction: 70, // Initial satisfaction level (0-100)
-      satisfactionFactors: {
-        staffRatio: 0.5, // Weight of staff ratio in satisfaction
-        facilityQuality: 0.3, // Weight of facility quality in satisfaction
-        waitingTime: 0.2, // Weight of waiting time in satisfaction
-      },
+      patientSatisfaction: 70,
+      satisfactionFactors: { staffRatio: 0.5, facilityQuality: 0.3, waitingTime: 0.2 },
       financialHistory: [
         {
           month: 0,
           revenue: 0,
-          fixedCosts: 500_000_000,
+          fixedCosts: Math.round(500_000_000 * costMultiplier),
           variableCosts: 0,
-          totalCosts: 500_000_000,
-          profit: -500_000_000,
+          totalCosts: Math.round(500_000_000 * costMultiplier),
+          profit: -Math.round(500_000_000 * costMultiplier),
           patients: 0,
           cash: 10_000_000_000,
           patientSatisfaction: 70,
@@ -154,82 +162,157 @@ export default function SetupPage() {
     router.push("/game")
   }
 
-  // Calculate monthly loan payment
   function calculateLoanPayment(principal: number, annualRate: number, months: number) {
     const monthlyRate = annualRate / 12
     return (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months))
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-emerald-50 to-teal-100 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl text-emerald-700">Setup Rumah Sakit</CardTitle>
-          <CardDescription>Masukkan informasi awal untuk memulai simulasi</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="managerName">Nama Pengelola</Label>
-              <Input
-                id="managerName"
-                value={managerName}
-                onChange={(e) => setManagerName(e.target.value)}
-                placeholder="Masukkan nama Anda"
-              />
+    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-teal-100 p-4">
+      <div className="mx-auto max-w-2xl pt-6 pb-12">
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <div className="mb-2 text-5xl">🏥</div>
+          <h1 className="text-3xl font-bold text-emerald-800">Rumah Sakit Simulator</h1>
+          <p className="mt-1 text-emerald-600">Simulasi manajemen pembiayaan rumah sakit</p>
+        </div>
+
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-xl text-emerald-700">Setup Permainan</CardTitle>
+            <CardDescription>Isi informasi awal untuk memulai simulasi 3 tahun (36 bulan)</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Input nama */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="managerName">Nama Pengelola</Label>
+                <Input
+                  id="managerName"
+                  value={managerName}
+                  onChange={(e) => setManagerName(e.target.value)}
+                  placeholder="Nama Anda"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="hospitalName">Nama Rumah Sakit</Label>
+                <Input
+                  id="hospitalName"
+                  value={hospitalName}
+                  onChange={(e) => setHospitalName(e.target.value)}
+                  placeholder="RS ..."
+                />
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="hospitalName">Nama Rumah Sakit</Label>
-              <Input
-                id="hospitalName"
-                value={hospitalName}
-                onChange={(e) => setHospitalName(e.target.value)}
-                placeholder="Masukkan nama rumah sakit"
-              />
+            {/* Difficulty selector */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Tingkat Kesulitan</Label>
+              <div className="grid gap-3 sm:grid-cols-3">
+                {DIFFICULTY_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setDifficulty(opt.value)}
+                    className={`rounded-xl border-2 p-3 text-left transition-all ${
+                      difficulty === opt.value ? opt.activeColor : opt.color + " hover:opacity-80"
+                    }`}
+                  >
+                    <div className="mb-1 flex items-center gap-2">
+                      <span className="text-xl">{opt.emoji}</span>
+                      <span className="font-bold text-gray-800">{opt.label}</span>
+                      {difficulty === opt.value && (
+                        <span className={`ml-auto rounded-full px-2 py-0.5 text-xs font-medium ${opt.badge}`}>
+                          Dipilih
+                        </span>
+                      )}
+                    </div>
+                    <p className="mb-2 text-xs text-gray-500">{opt.summary}</p>
+                    <ul className="space-y-0.5">
+                      {opt.perks.map((perk, i) => (
+                        <li key={i} className="text-xs text-gray-600">• {perk}</li>
+                      ))}
+                    </ul>
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Tingkat Kesulitan</Label>
-              <RadioGroup value={difficulty} onValueChange={setDifficulty} className="flex gap-4">
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="easy" id="easy" />
-                  <Label htmlFor="easy" className="cursor-pointer">
-                    Mudah
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="medium" id="medium" />
-                  <Label htmlFor="medium" className="cursor-pointer">
-                    Sedang
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="hard" id="hard" />
-                  <Label htmlFor="hard" className="cursor-pointer">
-                    Sulit
-                  </Label>
-                </div>
-              </RadioGroup>
+            {/* Info awal */}
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm">
+              <p className="mb-2 font-semibold text-emerald-800">📋 Kondisi Awal:</p>
+              <div className="grid gap-1 sm:grid-cols-2">
+                <p className="text-emerald-700">• Modal: Rp 10 M (pinjaman 36 bln)</p>
+                <p className="text-emerald-700">• 3 departemen aktif: IGD, Poli Umum, Rawat Inap</p>
+                <p className="text-emerald-700">• 35 staf awal (10 dr, 15 prwt, 5 adm, 5 spt)</p>
+                <p className="text-emerald-700">• 4 departemen spesialis bisa dibuka</p>
+              </div>
             </div>
 
-            <div className="rounded-lg bg-blue-50 p-4 text-sm">
-              <p className="font-medium text-blue-800">Informasi Awal:</p>
-              <ul className="mt-2 space-y-1 text-blue-700">
-                <li>• Modal awal: 10 milyar Rupiah (pinjaman)</li>
-                <li>• Departemen awal: IGD, Poli Umum, Rawat Inap (1 kamar)</li>
-                <li>• Durasi permainan: 3 tahun (36 bulan)</li>
-                <li>• Maksimal pinjaman tambahan: 3 kali</li>
-              </ul>
-            </div>
-          </form>
-        </CardContent>
-        <CardFooter>
-          <Button onClick={handleSubmit} className="w-full bg-emerald-600 hover:bg-emerald-700">
-            Mulai Permainan
-          </Button>
-        </CardFooter>
-      </Card>
+            {/* Tutorial toggle */}
+            <button
+              type="button"
+              onClick={() => setShowTutorial(!showTutorial)}
+              className="flex w-full items-center justify-between rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm text-blue-700 hover:bg-blue-100"
+            >
+              <span className="font-medium">📚 Cara Bermain & Tujuan Pembelajaran</span>
+              <span>{showTutorial ? "▲ Sembunyikan" : "▼ Tampilkan"}</span>
+            </button>
+
+            {showTutorial && (
+              <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm space-y-3">
+                <div>
+                  <p className="font-semibold text-blue-800 mb-1">🎯 Tujuan Pembelajaran</p>
+                  <p className="text-blue-700">
+                    Game ini mengajarkan konsep <strong>Pembiayaan Rumah Sakit</strong> melalui simulasi nyata:
+                    bagaimana keputusan SDM, fasilitas, dan layanan mempengaruhi efisiensi & efektivitas RS.
+                  </p>
+                </div>
+                <div>
+                  <p className="font-semibold text-blue-800 mb-1">📊 Konsep Ekonomi Kesehatan</p>
+                  <div className="grid gap-1 sm:grid-cols-2">
+                    {[
+                      ["FC", "Fixed Cost — biaya tetap (sewa, gaji pokok)"],
+                      ["VC", "Variable Cost — biaya per pasien (obat, alkes)"],
+                      ["TC", "Total Cost = FC + VC"],
+                      ["TR", "Total Revenue — pendapatan semua pasien"],
+                      ["MC", "Marginal Cost — biaya 1 pasien tambahan"],
+                      ["ATC", "Average Total Cost = TC ÷ pasien"],
+                    ].map(([code, desc]) => (
+                      <p key={code} className="text-blue-700">
+                        <span className="font-bold">{code}</span>: {desc}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="font-semibold text-blue-800 mb-1">🕹️ Cara Bermain</p>
+                  <ol className="space-y-1 text-blue-700 list-decimal list-inside">
+                    <li>Setiap bulan, kelola staf & departemen untuk menambah pasien</li>
+                    <li>Klik "Lanjut Bulan" → pilih respons event bulanan</li>
+                    <li>Analisis laporan: apakah TR &gt; TC? Apa BEP-nya?</li>
+                    <li>Ambil pinjaman tambahan jika perlu (maks 3x tambahan)</li>
+                    <li>Buka departemen spesialis untuk meningkatkan revenue</li>
+                    <li>Capai 36 bulan dengan kas positif untuk menang!</li>
+                  </ol>
+                </div>
+                <div className="rounded-md bg-amber-50 border border-amber-200 p-3">
+                  <p className="text-amber-800 font-medium">⚠️ Game Over jika:</p>
+                  <ul className="text-amber-700 text-xs mt-1 space-y-0.5">
+                    <li>• Kas defisit &gt; Rp 1 M dan tidak bisa pinjam lagi</li>
+                    <li>• 3 bulan berturut-turut rugi dengan kas negatif</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+          </CardContent>
+          <CardFooter>
+            <Button onClick={handleSubmit} className="w-full bg-emerald-600 text-base hover:bg-emerald-700 py-6">
+              🏥 Mulai Simulasi
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   )
 }

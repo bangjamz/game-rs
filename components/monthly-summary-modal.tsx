@@ -85,7 +85,7 @@ export default function MonthlySummaryModal({ gameState, onContinue }: MonthlySu
   if (atc > 0) {
     insights.push({
       icon: "💡",
-      text: `ATC = ${formatCurrency(atc)}/pasien | AVC = ${formatCurrency(avc)}/pasien | MC = ${formatCurrency(mc)}`,
+      text: `ATC = ${formatCurrency(Math.round(atc))}/pasien | AVC = ${formatCurrency(Math.round(avc))}/pasien${mc > 0 ? ` | MC = ${formatCurrency(Math.round(mc))}` : ""}`,
       color: "bg-purple-50 text-purple-800 border-purple-200",
     })
   }
@@ -150,7 +150,7 @@ export default function MonthlySummaryModal({ gameState, onContinue }: MonthlySu
                   {revTrend !== null && (
                     <div className={`flex items-center justify-end gap-1 text-xs ${revTrend >= 0 ? "text-green-600" : "text-red-500"}`}>
                       {revTrend > 0 ? <TrendingUp className="h-3 w-3" /> : revTrend < 0 ? <TrendingDown className="h-3 w-3" /> : <Minus className="h-3 w-3" />}
-                      {Math.abs(revTrend).toFixed(1)}% vs bln lalu
+                      {Math.abs(revTrend).toFixed(1)}%
                     </div>
                   )}
                 </div>
@@ -226,7 +226,7 @@ export default function MonthlySummaryModal({ gameState, onContinue }: MonthlySu
                   <p className="text-base font-bold text-red-700 whitespace-nowrap">{formatCurrency(current.variableCosts)}</p>
                   {vcTrend !== null && (
                     <p className={`text-xs ${vcTrend >= 0 ? "text-red-500" : "text-green-600"}`}>
-                      {vcTrend > 0 ? "+" : ""}{vcTrend.toFixed(1)}% vs bln lalu
+                      {vcTrend > 0 ? "+" : ""}{vcTrend.toFixed(1)}%
                     </p>
                   )}
                 </div>

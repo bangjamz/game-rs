@@ -9,8 +9,9 @@ import { Progress } from "@/components/ui/progress"
 import { useToast } from "@/hooks/use-toast"
 import { formatCurrency } from "@/lib/utils"
 import type { GameState } from "@/lib/types"
-import { AlertCircle, ArrowUp, Lock, Unlock } from "lucide-react"
+import { AlertCircle, ArrowUp, Lock, Unlock, ChevronDown, ChevronUp } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import HelpButton from "@/components/help-button"
 
 interface DepartmentsProps {
   gameState: GameState
@@ -312,15 +313,25 @@ export default function Departments({ gameState, setGameState }: DepartmentsProp
   }
 
   return (
-    <div className="p-4">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-6">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="active">Departemen Aktif</TabsTrigger>
-          <TabsTrigger value="locked">Departemen Terkunci</TabsTrigger>
-        </TabsList>
+    <div className="p-1">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-4">
+        <div className="mb-3 flex items-center justify-between">
+          <TabsList className="grid grid-cols-2">
+            <TabsTrigger value="active">Departemen Aktif</TabsTrigger>
+            <TabsTrigger value="locked">
+              Buka Baru
+              {gameState.lockedDepartments && Object.keys(gameState.lockedDepartments).length > 0 && (
+                <span className="ml-1 rounded-full bg-amber-100 px-1.5 text-xs text-amber-700">
+                  {Object.keys(gameState.lockedDepartments).length}
+                </span>
+              )}
+            </TabsTrigger>
+          </TabsList>
+          <HelpButton context="departments" />
+        </div>
 
-        <TabsContent value="active" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-3">
+        <TabsContent value="active" className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {/* Regular departments */}
             {Object.keys(gameState.departments).map((dept) => {
               const department = gameState.departments[dept]
@@ -328,10 +339,19 @@ export default function Departments({ gameState, setGameState }: DepartmentsProp
               const isExpanded = expandedDept === dept
 
               return (
-                <Card key={dept} className={isExpanded ? "md:col-span-3" : ""}>
-                  <CardHeader>
-                    <CardTitle>{departmentNames[dept]}</CardTitle>
-                    <CardDescription>Level {department.level} / 3</CardDescription>
+                <Card key={dept} className="overflow-hidden">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <CardTitle className="text-base">{departmentNames[dept]}</CardTitle>
+                        <CardDescription>Level {department.level}/3 · {department.capacity} pasien</CardDescription>
+                      </div>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                        department.staff >= department.requiredStaff ? "bg-green-100 text-green-700" :
+                        department.staff >= department.requiredStaff * 0.8 ? "bg-yellow-100 text-yellow-700" :
+                        "bg-red-100 text-red-700"
+                      }`}>{staffStatus.status}</span>
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -429,19 +449,23 @@ export default function Departments({ gameState, setGameState }: DepartmentsProp
                       )}
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <Button variant="outline" onClick={() => setExpandedDept(isExpanded ? null : dept)}>
-                      {isExpanded ? "Tutup Detail" : "Lihat Detail"}
-                    </Button>
-
-                    {department.level < 3 && (
+                  <CardFooter className="flex flex-col gap-2 pt-2">
+                    <button
+                      onClick={() => setExpandedDept(isExpanded ? null : dept)}
+                      className="flex w-full items-center justify-between rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100"
+                    >
+                      {isExpanded ? "Sembunyikan detail" : "Lihat detail & upgrade"}
+                      {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                    </button>
+                    {department.level < 3 && !isExpanded && (
                       <Button
+                        size="sm"
                         onClick={() => handleUpgrade(dept)}
                         disabled={gameState.cash < upgradeCosts[dept][department.level + 1]}
-                        className="bg-emerald-600 hover:bg-emerald-700"
+                        className="w-full bg-emerald-600 text-xs hover:bg-emerald-700"
                       >
-                        <ArrowUp className="mr-1 h-4 w-4" />
-                        Upgrade
+                        <ArrowUp className="mr-1 h-3.5 w-3.5" />
+                        Upgrade ke Lv{department.level + 1} · {formatCurrency(upgradeCosts[dept][department.level + 1])}
                       </Button>
                     )}
                   </CardFooter>
@@ -457,10 +481,19 @@ export default function Departments({ gameState, setGameState }: DepartmentsProp
                 const isExpanded = expandedDept === `unlocked-${dept}`
 
                 return (
-                  <Card key={`unlocked-${dept}`} className={isExpanded ? "md:col-span-3" : ""}>
-                    <CardHeader>
-                      <CardTitle>{department.name}</CardTitle>
-                      <CardDescription>Level {department.level} / 3</CardDescription>
+                  <Card key={`unlocked-${dept}`} className="overflow-hidden">
+                    <CardHeader className="pb-2">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <CardTitle className="text-base">{department.name}</CardTitle>
+                          <CardDescription>Spesialis · Lv{department.level}/3 · {department.capacity} pasien</CardDescription>
+                        </div>
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                          department.staff >= department.requiredStaff ? "bg-green-100 text-green-700" :
+                          department.staff >= department.requiredStaff * 0.8 ? "bg-yellow-100 text-yellow-700" :
+                          "bg-red-100 text-red-700"
+                        }`}>{staffStatus.status}</span>
+                      </div>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
@@ -518,7 +551,7 @@ export default function Departments({ gameState, setGameState }: DepartmentsProp
                                   </li>
                                   <li className="flex justify-between">
                                     <span>Bonus Spesialisasi:</span>
-                                    <span>+{((departmentCharacteristics[dept].specialtyBonus || 1.0) - 1) * 100}%</span>
+                                    <span>+{(((departmentCharacteristics[dept].specialtyBonus || 1.0) - 1) * 100).toFixed(0)}%</span>
                                   </li>
                                 </ul>
                               </div>
@@ -562,19 +595,23 @@ export default function Departments({ gameState, setGameState }: DepartmentsProp
                         )}
                       </div>
                     </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <Button variant="outline" onClick={() => setExpandedDept(isExpanded ? null : `unlocked-${dept}`)}>
-                        {isExpanded ? "Tutup Detail" : "Lihat Detail"}
-                      </Button>
-
-                      {department.level < 3 && (
+                    <CardFooter className="flex flex-col gap-2 pt-2">
+                      <button
+                        onClick={() => setExpandedDept(isExpanded ? null : `unlocked-${dept}`)}
+                        className="flex w-full items-center justify-between rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100"
+                      >
+                        {isExpanded ? "Sembunyikan detail" : "Lihat detail & upgrade"}
+                        {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                      </button>
+                      {department.level < 3 && !isExpanded && (
                         <Button
+                          size="sm"
                           onClick={() => handleUpgrade(dept)}
                           disabled={gameState.cash < upgradeCosts[dept][department.level + 1]}
-                          className="bg-emerald-600 hover:bg-emerald-700"
+                          className="w-full bg-emerald-600 text-xs hover:bg-emerald-700"
                         >
-                          <ArrowUp className="mr-1 h-4 w-4" />
-                          Upgrade
+                          <ArrowUp className="mr-1 h-3.5 w-3.5" />
+                          Upgrade ke Lv{department.level + 1} · {formatCurrency(upgradeCosts[dept][department.level + 1])}
                         </Button>
                       )}
                     </CardFooter>

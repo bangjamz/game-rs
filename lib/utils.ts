@@ -13,3 +13,13 @@ export function formatCurrency(amount: number): string {
     maximumFractionDigits: 0,
   }).format(amount)
 }
+
+export function formatPercent(value: number, decimals = 1): string {
+  return value.toFixed(decimals) + "%"
+}
+
+export function formatCompact(amount: number): string {
+  if (Math.abs(amount) >= 1_000_000_000) return `Rp ${(amount / 1_000_000_000).toFixed(1)}M`
+  if (Math.abs(amount) >= 1_000_000) return `Rp ${(amount / 1_000_000).toFixed(0)}jt`
+  return formatCurrency(amount)
+}
