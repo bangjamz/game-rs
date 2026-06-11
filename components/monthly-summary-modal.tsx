@@ -1,9 +1,19 @@
 "use client"
 
+import type React from "react"
 import { Button } from "@/components/ui/button"
 import { formatCurrency } from "@/lib/utils"
 import type { GameState } from "@/lib/types"
-import { Printer, ChevronRight, TrendingUp, TrendingDown, Minus } from "lucide-react"
+import { Printer, ChevronRight, TrendingUp, TrendingDown, Minus, CheckCircle2, XCircle, BarChart3, Target, AlertCircle, Lightbulb } from "lucide-react"
+
+const INSIGHT_ICONS: Record<string, React.ReactNode> = {
+  "✅": <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-green-600" />,
+  "🔴": <XCircle className="h-3.5 w-3.5 shrink-0 text-red-600" />,
+  "📊": <BarChart3 className="h-3.5 w-3.5 shrink-0 text-blue-600" />,
+  "🎯": <Target className="h-3.5 w-3.5 shrink-0 text-emerald-600" />,
+  "⚠️": <AlertCircle className="h-3.5 w-3.5 shrink-0 text-amber-600" />,
+  "💡": <Lightbulb className="h-3.5 w-3.5 shrink-0 text-purple-600" />,
+}
 
 interface MonthlySummaryModalProps {
   gameState: GameState
@@ -270,8 +280,9 @@ export default function MonthlySummaryModal({ gameState, onContinue }: MonthlySu
           {/* === PROFIT / RUGI === */}
           <div className={`flex items-center justify-between rounded-lg px-4 py-3 ${isProfit ? "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"}`}>
             <div>
-              <p className={`text-base font-bold ${isProfit ? "text-green-800" : "text-red-800"}`}>
-                {isProfit ? "✅ LABA (TR − TC)" : "❌ RUGI (TR − TC)"}
+              <p className={`flex items-center gap-2 text-base font-bold ${isProfit ? "text-green-800" : "text-red-800"}`}>
+                {isProfit ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                {isProfit ? "LABA (TR − TC)" : "RUGI (TR − TC)"}
               </p>
               <p className={`text-xs ${isProfit ? "text-green-600" : "text-red-600"}`}>
                 Kas tersedia: {formatCurrency(gameState.cash)}
@@ -305,10 +316,12 @@ export default function MonthlySummaryModal({ gameState, onContinue }: MonthlySu
           {/* === INSIGHT OTOMATIS === */}
           {insights.length > 0 && (
             <div className="mt-3 space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">💡 Analisis Otomatis</p>
+              <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                <Lightbulb className="h-3.5 w-3.5" /> Analisis Otomatis
+              </p>
               {insights.map((insight, i) => (
-                <div key={i} className={`rounded-md border px-3 py-2 text-xs ${insight.color}`}>
-                  <span className="mr-1">{insight.icon}</span>
+                <div key={i} className={`flex items-start gap-2 rounded-md border px-3 py-2 text-xs ${insight.color}`}>
+                  <span className="mt-0.5">{INSIGHT_ICONS[insight.icon] ?? insight.icon}</span>
                   {insight.text}
                 </div>
               ))}

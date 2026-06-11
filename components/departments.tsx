@@ -387,7 +387,7 @@ export default function Departments({ gameState, setGameState }: DepartmentsProp
                         <div className="mt-4 space-y-4 rounded-lg bg-gray-50 p-4">
                           <h3 className="font-medium">Detail Departemen</h3>
 
-                          <div className="grid gap-4 md:grid-cols-2">
+                          <div className="grid gap-4">
                             <div>
                               <h4 className="mb-2 text-sm font-medium">Informasi Saat Ini</h4>
                               <ul className="space-y-1 text-sm">
@@ -529,7 +529,7 @@ export default function Departments({ gameState, setGameState }: DepartmentsProp
                           <div className="mt-4 space-y-4 rounded-lg bg-gray-50 p-4">
                             <h3 className="font-medium">Detail Departemen</h3>
 
-                            <div className="grid gap-4 md:grid-cols-2">
+                            <div className="grid gap-4">
                               <div>
                                 <h4 className="mb-2 text-sm font-medium">Informasi Saat Ini</h4>
                                 <ul className="space-y-1 text-sm">

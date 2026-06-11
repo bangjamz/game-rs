@@ -13,14 +13,15 @@ import GameOver from "@/components/game-over"
 import MonthlyEvent, { type MonthlyEventEffect } from "@/components/monthly-event"
 import MonthlySummaryModal from "@/components/monthly-summary-modal"
 import HelpButton from "@/components/help-button"
+import { LayoutDashboard, Building2, Users2, Wallet, Hospital, Loader2, FileText, SkipForward } from "lucide-react"
 import type { GameState } from "@/lib/types"
 
-const TAB_LABELS: Record<string, string> = {
-  dashboard: "📊 Dashboard",
-  departments: "🏥 Departemen",
-  staff: "👥 Staf",
-  finances: "💰 Keuangan",
-}
+const TAB_META = [
+  { key: "dashboard", label: "Dashboard", Icon: LayoutDashboard },
+  { key: "departments", label: "Departemen", Icon: Building2 },
+  { key: "staff", label: "Staf", Icon: Users2 },
+  { key: "finances", label: "Keuangan", Icon: Wallet },
+]
 
 export default function GamePage() {
   const router = useRouter()
@@ -294,7 +295,7 @@ export default function GamePage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-emerald-50">
         <div className="text-center">
-          <div className="mb-3 text-4xl animate-bounce">🏥</div>
+          <Loader2 className="mx-auto mb-3 h-10 w-10 animate-spin text-emerald-600" />
           <p className="text-lg font-medium text-emerald-700">Memuat data permainan...</p>
         </div>
       </div>
@@ -304,8 +305,8 @@ export default function GamePage() {
   if (gameOver) return <GameOver gameState={gameState!} reason={gameOverReason} />
 
   const diffBadge =
-    gameState?.difficulty === "easy" ? "😊 Mudah" :
-    gameState?.difficulty === "hard" ? "😤 Sulit" : "😐 Sedang"
+    gameState?.difficulty === "easy" ? "Mudah" :
+    gameState?.difficulty === "hard" ? "Sulit" : "Sedang"
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -318,7 +319,7 @@ export default function GamePage() {
                 {/* Identitas */}
                 <div className="min-w-0">
                   <h1 className="truncate text-sm font-bold text-emerald-700 sm:text-base">
-                    🏥 {gameState.hospitalName}
+                    {gameState.hospitalName}
                   </h1>
                   <p className="text-xs text-gray-400">
                     {gameState.managerName} · <span className="font-semibold text-emerald-600">Bln {gameState.currentMonth}/36</span>
@@ -350,16 +351,17 @@ export default function GamePage() {
 
               {/* Tab nav */}
               <div className="-mb-px mt-2 flex gap-0.5 overflow-x-auto">
-                {Object.entries(TAB_LABELS).map(([tab, label]) => (
+                {TAB_META.map(({ key, label, Icon }) => (
                   <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`shrink-0 rounded-t-md border-b-2 px-3 py-1.5 text-xs font-medium transition-colors sm:text-sm ${
-                      activeTab === tab
+                    key={key}
+                    onClick={() => setActiveTab(key)}
+                    className={`flex shrink-0 items-center gap-1.5 rounded-t-md border-b-2 px-3 py-1.5 text-xs font-medium transition-colors sm:text-sm ${
+                      activeTab === key
                         ? "border-emerald-600 bg-emerald-50 text-emerald-700"
                         : "border-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                     }`}
                   >
+                    <Icon className="h-3.5 w-3.5" />
                     {label}
                   </button>
                 ))}
@@ -389,21 +391,21 @@ export default function GamePage() {
           {showReportChoice && !showSummaryModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
               <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl text-center">
-                <div className="mb-3 text-4xl">📋</div>
+                <FileText className="mx-auto mb-3 h-10 w-10 text-emerald-600" />
                 <h2 className="mb-1 text-lg font-bold text-gray-800">Bulan {gameState.currentMonth - 1} Selesai!</h2>
                 <p className="mb-5 text-sm text-gray-500">Apakah Anda ingin melihat laporan keuangan bulanan?</p>
                 <div className="flex gap-3">
                   <button
                     onClick={() => { setShowReportChoice(false) }}
-                    className="flex-1 rounded-xl border-2 border-gray-200 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-gray-200 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
                   >
-                    ⏭️ Lewati
+                    <SkipForward className="h-4 w-4" /> Lewati
                   </button>
                   <button
                     onClick={() => { setShowReportChoice(false); setShowSummaryModal(true) }}
-                    className="flex-1 rounded-xl bg-emerald-600 py-3 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-600 py-3 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
                   >
-                    📊 Lihat Laporan
+                    <FileText className="h-4 w-4" /> Lihat Laporan
                   </button>
                 </div>
               </div>

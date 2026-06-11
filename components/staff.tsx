@@ -487,24 +487,25 @@ export default function Staff({ gameState, setGameState }: StaffProps) {
                     </div>
                   </div>
                 </CardContent>
-                <CardFooter className="flex justify-between">
+                <CardFooter className="flex flex-col gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() => handleHire(staffType.id)}
+                    disabled={gameState.cash < staffType.hiringCost}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700"
+                  >
+                    <PlusCircle className="mr-1 h-4 w-4" />
+                    Rekrut
+                  </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => handleFire(staffType.id)}
                     disabled={gameState.staff[staffType.id] <= 0 || unassignedStaff < 1}
+                    className="w-full"
                   >
                     <MinusCircle className="mr-1 h-4 w-4" />
                     Berhentikan
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => handleHire(staffType.id)}
-                    disabled={gameState.cash < staffType.hiringCost}
-                    className="bg-emerald-600 hover:bg-emerald-700"
-                  >
-                    <PlusCircle className="mr-1 h-4 w-4" />
-                    Rekrut
                   </Button>
                 </CardFooter>
               </Card>

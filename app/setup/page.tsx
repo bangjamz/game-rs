@@ -9,12 +9,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
+import { Smile, Minus, Flame, Hospital, BookOpen, ChevronDown, ChevronUp } from "lucide-react"
 
 const DIFFICULTY_OPTIONS = [
   {
     value: "easy",
     label: "Mudah",
-    emoji: "😊",
+    Icon: Smile,
     color: "border-green-400 bg-green-50",
     activeColor: "border-green-600 bg-green-100 ring-2 ring-green-400",
     badge: "bg-green-100 text-green-700",
@@ -29,7 +30,7 @@ const DIFFICULTY_OPTIONS = [
   {
     value: "medium",
     label: "Sedang",
-    emoji: "😐",
+    Icon: Minus,
     color: "border-yellow-400 bg-yellow-50",
     activeColor: "border-yellow-600 bg-yellow-100 ring-2 ring-yellow-400",
     badge: "bg-yellow-100 text-yellow-700",
@@ -44,7 +45,7 @@ const DIFFICULTY_OPTIONS = [
   {
     value: "hard",
     label: "Sulit",
-    emoji: "😤",
+    Icon: Flame,
     color: "border-red-400 bg-red-50",
     activeColor: "border-red-600 bg-red-100 ring-2 ring-red-400",
     badge: "bg-red-100 text-red-700",
@@ -172,7 +173,7 @@ export default function SetupPage() {
       <div className="mx-auto max-w-2xl pt-6 pb-12">
         {/* Header */}
         <div className="mb-8 text-center">
-          <div className="mb-2 text-5xl">🏥</div>
+          <Hospital className="mx-auto mb-2 h-12 w-12 text-emerald-600" />
           <h1 className="text-3xl font-bold text-emerald-800">Rumah Sakit Simulator</h1>
           <p className="mt-1 text-emerald-600">Simulasi manajemen pembiayaan rumah sakit</p>
         </div>
@@ -219,7 +220,7 @@ export default function SetupPage() {
                     }`}
                   >
                     <div className="mb-1 flex items-center gap-2">
-                      <span className="text-xl">{opt.emoji}</span>
+                      <opt.Icon className="h-4 w-4 text-gray-600" />
                       <span className="font-bold text-gray-800">{opt.label}</span>
                       {difficulty === opt.value && (
                         <span className={`ml-auto rounded-full px-2 py-0.5 text-xs font-medium ${opt.badge}`}>
@@ -240,7 +241,7 @@ export default function SetupPage() {
 
             {/* Info awal */}
             <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm">
-              <p className="mb-2 font-semibold text-emerald-800">📋 Kondisi Awal:</p>
+              <p className="mb-2 font-semibold text-emerald-800">Kondisi Awal:</p>
               <div className="grid gap-1 sm:grid-cols-2">
                 <p className="text-emerald-700">• Modal: Rp 10 M (pinjaman 36 bln)</p>
                 <p className="text-emerald-700">• 3 departemen aktif: IGD, Poli Umum, Rawat Inap</p>
@@ -255,21 +256,23 @@ export default function SetupPage() {
               onClick={() => setShowTutorial(!showTutorial)}
               className="flex w-full items-center justify-between rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm text-blue-700 hover:bg-blue-100"
             >
-              <span className="font-medium">📚 Cara Bermain & Tujuan Pembelajaran</span>
-              <span>{showTutorial ? "▲ Sembunyikan" : "▼ Tampilkan"}</span>
+              <span className="flex items-center gap-2 font-medium">
+                <BookOpen className="h-4 w-4" /> Cara Bermain & Tujuan Pembelajaran
+              </span>
+              {showTutorial ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </button>
 
             {showTutorial && (
               <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm space-y-3">
                 <div>
-                  <p className="font-semibold text-blue-800 mb-1">🎯 Tujuan Pembelajaran</p>
+                  <p className="font-semibold text-blue-800 mb-1">Tujuan Pembelajaran</p>
                   <p className="text-blue-700">
                     Game ini mengajarkan konsep <strong>Pembiayaan Rumah Sakit</strong> melalui simulasi nyata:
                     bagaimana keputusan SDM, fasilitas, dan layanan mempengaruhi efisiensi & efektivitas RS.
                   </p>
                 </div>
                 <div>
-                  <p className="font-semibold text-blue-800 mb-1">📊 Konsep Ekonomi Kesehatan</p>
+                  <p className="font-semibold text-blue-800 mb-1">Konsep Ekonomi Kesehatan</p>
                   <div className="grid gap-1 sm:grid-cols-2">
                     {[
                       ["FC", "Fixed Cost — biaya tetap (sewa, gaji pokok)"],
@@ -286,7 +289,7 @@ export default function SetupPage() {
                   </div>
                 </div>
                 <div>
-                  <p className="font-semibold text-blue-800 mb-1">🕹️ Cara Bermain</p>
+                  <p className="font-semibold text-blue-800 mb-1">Cara Bermain</p>
                   <ol className="space-y-1 text-blue-700 list-decimal list-inside">
                     <li>Setiap bulan, kelola staf & departemen untuk menambah pasien</li>
                     <li>Klik "Lanjut Bulan" → pilih respons event bulanan</li>
@@ -297,7 +300,7 @@ export default function SetupPage() {
                   </ol>
                 </div>
                 <div className="rounded-md bg-amber-50 border border-amber-200 p-3">
-                  <p className="text-amber-800 font-medium">⚠️ Game Over jika:</p>
+                  <p className="text-amber-800 font-medium">Game Over jika:</p>
                   <ul className="text-amber-700 text-xs mt-1 space-y-0.5">
                     <li>• Kas defisit &gt; Rp 1 M dan tidak bisa pinjam lagi</li>
                     <li>• 3 bulan berturut-turut rugi dengan kas negatif</li>
@@ -308,7 +311,7 @@ export default function SetupPage() {
           </CardContent>
           <CardFooter>
             <Button onClick={handleSubmit} className="w-full bg-emerald-600 text-base hover:bg-emerald-700 py-6">
-              🏥 Mulai Simulasi
+              <Hospital className="mr-2 h-5 w-5" /> Mulai Simulasi
             </Button>
           </CardFooter>
         </Card>

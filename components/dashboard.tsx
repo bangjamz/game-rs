@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { formatCurrency } from "@/lib/utils"
 import type { GameState } from "@/lib/types"
-import { AlertCircle, HeartPulse, TrendingDown, TrendingUp, Users } from "lucide-react"
+import { AlertCircle, HeartPulse, TrendingDown, TrendingUp, Users, CheckCircle2, XCircle, BarChart3, Hash, Target, Lightbulb } from "lucide-react"
 import HelpButton from "@/components/help-button"
 import { Progress } from "@/components/ui/progress"
 
@@ -201,7 +201,7 @@ export default function Dashboard({ gameState, setGameState }: DashboardProps) {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
-              <span>💡</span> Analisis Ekonomi Bulan {currentMonthData.month}
+              <Lightbulb className="h-4 w-4 text-amber-500" /> Analisis Ekonomi Bulan {currentMonthData.month}
             </CardTitle>
             <CardDescription>Insight otomatis berdasarkan data keuangan bulan ini</CardDescription>
           </CardHeader>
@@ -213,7 +213,10 @@ export default function Dashboard({ gameState, setGameState }: DashboardProps) {
                   ? "border-green-200 bg-green-50 text-green-800"
                   : "border-red-200 bg-red-50 text-red-800"
               }`}>
-                <span className="mt-0.5">{currentMonthData.profit >= 0 ? "✅" : "❌"}</span>
+                {currentMonthData.profit >= 0
+                  ? <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                  : <XCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                }
                 <span>
                   <strong>TR vs TC:</strong>{" "}
                   TR ({formatCurrency(currentMonthData.revenue)}){" "}
@@ -226,7 +229,7 @@ export default function Dashboard({ gameState, setGameState }: DashboardProps) {
               {/* TC = FC + VC */}
               {currentMonthData.totalCosts > 0 && (
                 <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-                  <span className="mt-0.5">📊</span>
+                  <BarChart3 className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   <span>
                     <strong>Struktur Biaya (TC = FC + VC):</strong>{" "}
                     FC {formatCurrency(currentMonthData.fixedCosts)} ({Math.round((currentMonthData.fixedCosts / currentMonthData.totalCosts) * 100)}%){" "}
@@ -238,7 +241,7 @@ export default function Dashboard({ gameState, setGameState }: DashboardProps) {
               {/* ATC/AVC per patient */}
               {currentMonthData.patients > 0 && (
                 <div className="flex items-start gap-2 rounded-lg border border-purple-200 bg-purple-50 px-3 py-2 text-xs text-purple-800">
-                  <span className="mt-0.5">🔢</span>
+                  <Hash className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   <span>
                     <strong>Per Pasien:</strong>{" "}
                     ATC = {formatCurrency(currentMonthData.totalCosts / currentMonthData.patients)}/pasien,{" "}
@@ -260,7 +263,7 @@ export default function Dashboard({ gameState, setGameState }: DashboardProps) {
                   <div className={`flex items-start gap-2 rounded-lg border px-3 py-2 text-xs ${
                     above ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-orange-200 bg-orange-50 text-orange-800"
                   }`}>
-                    <span className="mt-0.5">{above ? "🎯" : "⚠️"}</span>
+                    {above ? <Target className="mt-0.5 h-3.5 w-3.5 shrink-0" /> : <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />}
                     <span>
                       <strong>Break-Even Point (BEP):</strong>{" "}
                       {bep} pasien/bln. Saat ini {currentMonthData.patients} pasien{" "}

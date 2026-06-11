@@ -9,6 +9,7 @@ import {
   ResponsiveContainer, ReferenceLine,
 } from "recharts"
 import Link from "next/link"
+import { Trophy, HeartCrack, BookOpen, CalendarDays, TrendingUp, BarChart2, Microscope, Star, Lightbulb, Home, RefreshCw } from "lucide-react"
 
 interface GameOverProps {
   gameState: GameState
@@ -148,7 +149,10 @@ export default function GameOver({ gameState, reason }: GameOverProps) {
 
         {/* ── HERO ── */}
         <div className={`rounded-2xl p-6 text-center text-white ${isWin ? "bg-gradient-to-br from-emerald-600 to-teal-500" : "bg-gradient-to-br from-red-600 to-orange-500"}`}>
-          <div className="mb-2 text-5xl">{isWin ? "🏆" : "💔"}</div>
+          {isWin
+            ? <Trophy className="mx-auto mb-2 h-12 w-12 text-yellow-300" />
+            : <HeartCrack className="mx-auto mb-2 h-12 w-12 text-red-200" />
+          }
           <h1 className="text-2xl font-extrabold">{isWin ? "Simulasi Selesai!" : "Simulasi Berakhir"}</h1>
           <p className="mt-1 text-sm opacity-90">{gameState.hospitalName} · {gameState.managerName}</p>
           <p className="mt-2 text-sm opacity-80">{reason}</p>
@@ -171,7 +175,7 @@ export default function GameOver({ gameState, reason }: GameOverProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              📖 Analisis Perjalanan Simulasi
+              <BookOpen className="h-4 w-4" /> Analisis Perjalanan Simulasi
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -190,7 +194,7 @@ export default function GameOver({ gameState, reason }: GameOverProps) {
         {yearSummaries.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">📅 Ringkasan per Tahun</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-base"><CalendarDays className="h-4 w-4" /> Ringkasan per Tahun</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
@@ -232,7 +236,7 @@ export default function GameOver({ gameState, reason }: GameOverProps) {
           <>
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">📈 TR, TC, dan Profit per Bulan (juta Rp)</CardTitle>
+                <CardTitle className="flex items-center gap-2 text-base"><TrendingUp className="h-4 w-4" /> TR, TC, dan Profit per Bulan (juta Rp)</CardTitle>
               </CardHeader>
               <CardContent className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
@@ -254,7 +258,7 @@ export default function GameOver({ gameState, reason }: GameOverProps) {
             {/* ── GRAFIK: FC vs VC ── */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">📊 Struktur Biaya: FC vs VC per Bulan (juta Rp)</CardTitle>
+                <CardTitle className="flex items-center gap-2 text-base"><BarChart2 className="h-4 w-4" /> Struktur Biaya: FC vs VC per Bulan (juta Rp)</CardTitle>
               </CardHeader>
               <CardContent className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -274,7 +278,7 @@ export default function GameOver({ gameState, reason }: GameOverProps) {
             {/* ── GRAFIK: MC & ATC ── */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">🔬 MC (Marginal Cost) & ATC per Bulan</CardTitle>
+                <CardTitle className="flex items-center gap-2 text-base"><Microscope className="h-4 w-4" /> MC (Marginal Cost) & ATC per Bulan</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="mb-3 text-xs text-gray-500">
@@ -300,7 +304,7 @@ export default function GameOver({ gameState, reason }: GameOverProps) {
             {/* ── GRAFIK: Kepuasan ── */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">⭐ Tingkat Kepuasan Pasien per Bulan (%)</CardTitle>
+                <CardTitle className="flex items-center gap-2 text-base"><Star className="h-4 w-4" /> Tingkat Kepuasan Pasien per Bulan (%)</CardTitle>
               </CardHeader>
               <CardContent className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
@@ -321,7 +325,7 @@ export default function GameOver({ gameState, reason }: GameOverProps) {
         {/* ── PELAJARAN KUNCI ── */}
         <Card className="border-blue-200 bg-blue-50">
           <CardHeader>
-            <CardTitle className="text-base text-blue-800">💡 Pelajaran Ekonomi Kesehatan</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base text-blue-800"><Lightbulb className="h-4 w-4" /> Pelajaran Ekonomi Kesehatan</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -343,10 +347,10 @@ export default function GameOver({ gameState, reason }: GameOverProps) {
         {/* ── FOOTER ── */}
         <div className="flex justify-center gap-4">
           <Link href="/">
-            <Button variant="outline">← Beranda</Button>
+            <Button variant="outline"><Home className="mr-2 h-4 w-4" /> Beranda</Button>
           </Link>
           <Link href="/setup">
-            <Button className="bg-emerald-600 hover:bg-emerald-700">🔄 Main Lagi</Button>
+            <Button className="bg-emerald-600 hover:bg-emerald-700"><RefreshCw className="mr-2 h-4 w-4" /> Main Lagi</Button>
           </Link>
         </div>
       </div>
