@@ -9,7 +9,7 @@ import {
   ResponsiveContainer, ReferenceLine,
 } from "recharts"
 import Link from "next/link"
-import { Trophy, HeartCrack, BookOpen, CalendarDays, TrendingUp, BarChart2, Microscope, Star, Lightbulb, Home, RefreshCw } from "lucide-react"
+import { Trophy, HeartCrack, BookOpen, CalendarDays, TrendingUp, BarChart2, Microscope, Star, Lightbulb, Home, RefreshCw, Printer } from "lucide-react"
 
 interface GameOverProps {
   gameState: GameState
@@ -345,7 +345,10 @@ export default function GameOver({ gameState, reason }: GameOverProps) {
         </Card>
 
         {/* ── FOOTER ── */}
-        <div className="flex justify-center gap-4">
+        <div className="flex flex-wrap justify-center gap-3">
+          <Button variant="outline" onClick={() => window.print()}>
+            <Printer className="mr-2 h-4 w-4" /> Cetak / Simpan PDF
+          </Button>
           <Link href="/">
             <Button variant="outline"><Home className="mr-2 h-4 w-4" /> Beranda</Button>
           </Link>
